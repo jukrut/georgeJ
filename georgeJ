@@ -90,9 +90,9 @@ def start_wireshark_nsenter(pid, node, interface):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--pod', default='.*')
-    parser.add_argument('--container', default='.*')
-    parser.add_argument('--interface', default='.*')
+    parser.add_argument('--pod', default='.*', help='regex for filtering pods (default .*)')
+    parser.add_argument('--container', default='.*', help='regex for filtering containers (default .*)')
+    parser.add_argument('--interface', default='.*', help='regex for filtering interfaces (default .*)')
     podregex = parser.parse_args().pod
     container_regex = parser.parse_args().container
     interface_regex = parser.parse_args().interface

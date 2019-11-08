@@ -4,11 +4,13 @@
 pip3.7 install --user -r requirements.txt
 
 ## Usage
-usage: main.py [-h] [--pod POD] [--container CONTAINER]
+
+usage: georgeJ [-h] [--pod POD] [--container CONTAINER]
                [--interface INTERFACE]
 
 optional arguments:
   -h, --help            show this help message and exit
-  --pod POD
-  --container CONTAINER
-  --interface INTERFACE
+  --pod POD             regex for filtering pods (default .*)
+  --container CONTAINER regex for filtering containers (default .*)
+  --interface INTERFACE regex for filtering interfaces (default .*)
+
