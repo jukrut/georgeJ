@@ -71,7 +71,6 @@ def get_interfaces_nsenter(pid, node):
     return cleanup_ip_results
 
 def filter_interfaces(regex, interfaces):
-    print(interfaces)
     interfaces_pattern = re.compile(regex)
     filtered_interfaces = [interface for interface in interfaces if interfaces_pattern.match(interface["name"])]
     return filtered_interfaces
