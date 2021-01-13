@@ -1,4 +1,3 @@
-#!/usr/bin/env python3.7
 import re
 import sh
 import argparse
@@ -63,10 +62,16 @@ def get_interfaces_nsenter(pid, node):
     ip_results = [re.sub(' +', ' ',line).rstrip().split(' ') for line in ns_enter_for_container.ip('-br', 'a')]
     cleanup_ip_results = [ ]
     for ip_result in ip_results :
-        if(len(ip_result) == 3):
-            cleanup_ip_results.append({'name': re.sub('@.*','', ip_result[0]), 'ip' : ip_result[2], 'status': ip_result[1]})
-        elif(len(ip_result) == 2):
-            cleanup_ip_results.append({'name': re.sub('@.*','', ip_result[0]), 'status': ip_result[1]})
+        # 2 - no ip, 3 - single ip, 4 dual stack
+        if (len(ip_result) < 2):
+            continue
+
+        status = ip_result[1]
+        if status == "DOWN":
+            continue
+
+        cleanup_ip_results.append({'name': re.sub('@.*','', ip_result[0]), 'status': status})
+
     return cleanup_ip_results
 
 def filter_interfaces(regex, interfaces):
@@ -85,13 +90,20 @@ def start_wireshark_nsenter(pid, node, interface):
     ssh_on_node = sh.tsh.ssh.bake(f'root@{node}')
     tcpdump_ns_enter = ssh_on_node.bake('nsenter', '-t', pid, '-n').tcpdump
     wireshark = sh.wireshark.bake('-k', '-i', '-')
-    wireshark(tcpdump_ns_enter('-w', '-','-lUni', interface, _piped=True))
+
+    tcpdump_params = [
+        '-w', '-',       # print to stdout
+        '-lUn',          # list interfaces, buffer output, do not convert address to names
+        '-i', interface, # interface name
+    ]
+
+    wireshark(tcpdump_ns_enter(*tcpdump_params, _piped=True))
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--pod', default='.*', help='regex for filtering pods (default .*)')
-    parser.add_argument('--container', default='.*', help='regex for filtering containers (default .*)')
-    parser.add_argument('--interface', default='.*', help='regex for filtering interfaces (default .*)')
+    parser.add_argument('--container', default='.*', help='regex for filtering containers (default .*) or se "any" to select first container')
+    parser.add_argument('--interface', default='.*', help='regex for filtering interfaces (default .*) or use "any" to listen on all interfaces')
     podregex = parser.parse_args().pod
     container_regex = parser.parse_args().container
     interface_regex = parser.parse_args().interface
@@ -103,12 +115,14 @@ def main():
         exit(1)
     pod = pick_pod_from(pods)
 
-    containers = filter_container_by(container_regex, pod["containers"])
-    if len(containers) == 0:
-        print('no containers matched your regex')
-        exit(1)
-    container = pick_container_from(containers)
-
+    if container_regex == "any":
+        container = pod["containers"][0]
+    else:
+        containers = filter_container_by(container_regex, pod["containers"])
+        if len(containers) == 0:
+            print('no containers matched your regex')
+            exit(1)
+        container = pick_container_from(containers)
 
     node = pod["node"]
     if(not can_be_reached(node)):
@@ -117,11 +131,15 @@ def main():
 
     container_pid = get_docker_id_from(node, container)
     interfaces = get_interfaces_nsenter(container_pid, node)
-    filtered_interfaces = filter_interfaces(interface_regex, interfaces)
-    if len(filtered_interfaces) == 0:
-        print('no interfaces matched your regex')
-        exit(1)
-    interface = pick_interface(filtered_interfaces)
+
+    if interface_regex == "any":
+        interface = "any"
+    else:
+        filtered_interfaces = filter_interfaces(interface_regex, interfaces)
+        if len(filtered_interfaces) == 0:
+            print('no interfaces matched your regex')
+            exit(1)
+        interface = pick_interface(filtered_interfaces)
 
     print(f'start sniffing interface {interface} of container {container["name"]} in pod {pod["name"]} on node {node}')
     start_wireshark_nsenter(container_pid, node, interface)
