@@ -142,7 +142,11 @@ def main():
         interface = pick_interface(filtered_interfaces)
 
     print(f'start sniffing interface {interface} of container {container["name"]} in pod {pod["name"]} on node {node}')
-    start_wireshark_nsenter(container_pid, node, interface)
+
+    try:
+        start_wireshark_nsenter(container_pid, node, interface)
+    except KeyboardInterrupt:
+        print(f'interrputed')
 
 if __name__ == '__main__':
     main()
