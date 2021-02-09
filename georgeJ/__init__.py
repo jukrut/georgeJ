@@ -28,7 +28,7 @@ def pick_pod_from(pods):
     if len(pods) == 1:
         return pods[0]
     else:
-        pod, index = pick([f'{pod["name"]} @ {pod["node"]} 'for pod in pods], "which pod", indicator='->')
+        pod, index = pick([f'{pod["name"]} @ {pod["node"]}' for pod in pods], "which pod", indicator='->')
         return pods[index]
 
 def filter_container_by(regex, containers):
@@ -83,6 +83,7 @@ def pick_interface(interfaces):
     if len(interfaces) == 1:
         return interfaces[0]["name"]
     else:
+        interfaces = [{ 'name':"any" }] + interfaces
         interface, index = pick(interfaces, "which interface", indicator='->')
         return interface["name"]
 
