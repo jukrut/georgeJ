@@ -1,5 +1,7 @@
 # Starts wireshark for pod on kubernetes reachable via teleport
 
+## unmaintained copy and have fun 
+
 ## Installation
 pip3.7 install --user -r requirements.txt
 
