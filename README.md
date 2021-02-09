@@ -5,12 +5,13 @@ pip3 install git+git://github.com/jukrut/georgeJ.git
 
 ## Usage
 ```
-usage: georgeJ [-h] [--pod POD] [--container CONTAINER]
-               [--interface INTERFACE]
+usage: georgeJ [-h] [--pod POD] [--container CONTAINER] [--interface INTERFACE]
 
 optional arguments:
   -h, --help            show this help message and exit
   --pod POD             regex for filtering pods (default .*)
-  --container CONTAINER regex for filtering containers (default .*)
-  --interface INTERFACE regex for filtering interfaces (default .*)
+  --container CONTAINER
+                        regex for filtering containers (default .*) or se "any" to select first container
+  --interface INTERFACE
+                        regex for filtering interfaces (default .*) or use "any" to listen on all interfaces
 ```
