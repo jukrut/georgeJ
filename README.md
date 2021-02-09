@@ -3,7 +3,7 @@
 ## unmaintained copy and have fun 
 
 ## Installation
-pip3.7 install --user -r requirements.txt
+pip3 install git+git://github.com/jukrut/georgeJ.git
 
 ## Usage
 ```
