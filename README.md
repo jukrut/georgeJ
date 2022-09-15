@@ -1,17 +1,16 @@
 # Starts wireshark for pod on kubernetes reachable via teleport
 
 ## Installation
-pip3 install git+git://github.com/jukrut/georgeJ.git
+pip3 install git+git://github.com/mogaika/georgeJ.git
 
 ## Usage
 ```
-usage: georgeJ [-h] [--pod POD] [--container CONTAINER] [--interface INTERFACE]
+usage: georgeJ [-h] [-h] [--pod POD] [--interface INTERFACE] [-tsh]
 
 optional arguments:
   -h, --help            show this help message and exit
   --pod POD             regex for filtering pods (default .*)
-  --container CONTAINER
-                        regex for filtering containers (default .*) or se "any" to select first container
   --interface INTERFACE
-                        regex for filtering interfaces (default .*) or use "any" to listen on all interfaces
+                        regex for interface or use "any" (default any)
+  -tsh                  use tsh way
 ```
