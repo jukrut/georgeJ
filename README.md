@@ -1,7 +1,7 @@
 # Starts wireshark for pod on kubernetes reachable via teleport
 
 ## Installation
-pip3 install git+git://github.com/mogaika/georgeJ.git
+pip3 install git+https://github.com/mogaika/georgeJ.git
 
 ## Usage
 ```
